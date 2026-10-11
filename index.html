@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Composição e substitutivos</title>
+<style>
+  /* Sem fontes ou bibliotecas externas: a página funciona mesmo em redes que bloqueiam o Google. */
+  :root {
+    --papel: #F2F4EF;
+    --cartao: #FFFFFF;
+    --tinta: #1D2A21;
+    --apagado: #5A685E;
+    --linha: #C9D1C6;
+    --pasto: #2E5B39;
+    --pasto-claro: #E3ECE1;
+    --milho: #D9A62E;
+    --erro: #A3321F;
+    --erro-fundo: #FBEDEA;
+    --sans: "Segoe UI", "Helvetica Neue", Arial, system-ui, sans-serif;
+    --mono: Consolas, "SFMono-Regular", Menlo, "Liberation Mono", monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --papel: #141A16;
+      --cartao: #1C241E;
+      --tinta: #E4EAE3;
+      --apagado: #9AA89D;
+      --linha: #34423A;
+      --pasto: #7DB98A;
+      --pasto-claro: #233327;
+      --milho: #E3B748;
+      --erro: #F08A74;
+      --erro-fundo: #3A1F19;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font: 16px/1.5 var(--sans);
+  }
+
+  .topo {
+    border-bottom: 6px solid var(--pasto);
+    background: var(--cartao);
+  }
+  .topo-interno {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 22px;
+  }
+  .topo h1 {
+    margin: 0;
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.3rem);
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .topo p {
+    margin: 8px 0 0;
+    max-width: 62ch;
+    color: var(--apagado);
+  }
+
+  .grade {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 64px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 36px;
+    align-items: start;
+  }
+
+  /* Formulário */
+  form h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 32px 0 4px;
+  }
+  form h2:first-of-type { margin-top: 28px; }
+
+  .campo-nome label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  input[type="text"] {
+    width: 100%;
+    font: inherit;
+    color: var(--tinta);
+    background: var(--cartao);
+    border: 1.5px solid var(--linha);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  input[type="text"]:focus-visible {
+    outline: 3px solid var(--milho);
+    outline-offset: 1px;
+    border-color: var(--tinta);
+  }
+
+  .pergunta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 16px;
+    align-items: center;
+    margin: 0;
+    padding: 12px 0;
+    border: 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .pergunta legend {
+    float: left; /* permite usar o legend dentro do grid */
+    padding: 0;
+    width: 100%;
+    font-weight: 500;
+  }
+  .pergunta .num { font-weight: 700; margin-right: 0.25em; }
+
+  .sn {
+    display: inline-flex;
+    border: 1.5px solid var(--linha);
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--cartao);
+  }
+  .sn input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sn label {
+    min-width: 58px;
+    padding: 6px 14px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+    color: var(--apagado);
+  }
+  .sn label + input + label { border-left: 1.5px solid var(--linha); }
+  .sn input:checked + label.sim { background: var(--pasto); color: #fff; }
+  .sn input:checked + label.nao { background: var(--tinta); color: var(--cartao); }
+  .sn input:focus-visible + label {
+    outline: 3px solid var(--milho);
+    outline-offset: -3px;
+  }
+
+  .extra {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+    padding: 12px 14px;
+    background: var(--pasto-claro);
+    border-left: 4px solid var(--pasto);
+    border-radius: 0 6px 6px 0;
+  }
+  .extra label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .extra small { display: block; color: var(--apagado); margin-top: 4px; }
+
+  .faltando > legend, .faltando.campo-nome label, .extra.faltando label { color: var(--erro); }
+  .faltando .sn, .faltando input[type="text"] { border-color: var(--erro); }
+
+  [hidden] { display: none !important; }
+
+  /* Resultado */
+  .resultado {
+    position: sticky;
+    top: 20px;
+  }
+  .resultado h2 {
+    font-size: 1.05rem;
+    margin: 0 0 10px;
+  }
+  .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  button {
+    font: inherit;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 10px 16px;
+    cursor: pointer;
+    border: 1.5px solid var(--pasto);
+  }
+  button:focus-visible { outline: 3px solid var(--milho); outline-offset: 2px; }
+  .principal { background: var(--pasto); color: #fff; }
+  .secundario { background: var(--cartao); color: var(--pasto); }
+  .discreto {
+    background: transparent;
+    border-color: transparent;
+    color: var(--apagado);
+    text-decoration: underline;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  @media (prefers-color-scheme: dark) {
+    .principal, .sn input:checked + label.sim { color: #10170F; }
+  }
+
+  .status {
+    min-height: 1.5em;
+    margin: 0 0 10px;
+    color: var(--apagado);
+  }
+  .status.erro {
+    color: var(--erro);
+    background: var(--erro-fundo);
+    padding: 8px 12px;
+    border-radius: 6px;
+  }
+  .status.ok { color: var(--pasto); font-weight: 600; }
+
+  .etiqueta {
+    background: var(--cartao);
+    border: 1.5px solid var(--linha);
+    border-top: 6px solid var(--milho);
+    border-radius: 6px;
+    padding: 18px 20px;
+    max-height: calc(100vh - 170px);
+    overflow: auto;
+  }
+  .etiqueta pre {
+    margin: 0;
+    font: 0.86rem/1.55 var(--mono);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .etiqueta .vazio {
+    margin: 0;
+    color: var(--apagado);
+  }
+
+  @media (max-width: 860px) {
+    .grade { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 12px 16px 48px; }
+    .topo-interno { padding: 22px 16px 18px; }
+    .resultado { position: static; margin-top: 24px; }
+    .etiqueta { max-height: none; }
+  }
+  @media (max-width: 420px) {
+    .pergunta { grid-template-columns: minmax(0, 1fr); }
+    .sn { justify-self: start; }
+  }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-interno">
+    <h1>Composição e substitutivos de suplementos</h1>
+    <p>Responda às perguntas para gerar o texto de composição básica qualitativa, eventuais substitutivos, modo de usar e restrições, com o registro das respostas no final.</p>
+  </div>
+</header>
+
+<main class="grade">
+  <form id="formulario" novalidate autocomplete="off">
+    <div class="campo-nome" id="bloco-nome">
+      <label for="nome">Qual o nome do produto?</label>
+      <input type="text" id="nome" name="nome">
+    </div>
+
+    <h2>Ingredientes</h2>
+    <div id="perguntas-ingredientes"></div>
+
+    <h2>Sobre o produto</h2>
+    <div id="perguntas-produto"></div>
+  </form>
+
+  <aside class="resultado" aria-labelledby="titulo-resultado">
+    <h2 id="titulo-resultado">Texto gerado</h2>
+    <div class="acoes">
+      <button type="button" class="principal" id="baixar">Baixar TXT</button>
+      <button type="button" class="secundario" id="copiar">Copiar texto</button>
+      <button type="button" class="discreto" id="limpar">Limpar respostas</button>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <div class="etiqueta">
+      <pre id="previa" hidden></pre>
+      <p class="vazio" id="previa-vazia">O texto aparece aqui quando todas as perguntas estiverem respondidas.</p>
+    </div>
+  </aside>
+</main>
+
+<script src="relatorio.js"></script>
+<script>
+(function () {
+  'use strict';
+  var R = window.Relatorio;
+  var form = document.getElementById('formulario');
+  var campoNome = document.getElementById('nome');
+  var statusEl = document.getElementById('status');
+  var previa = document.getElementById('previa');
+  var previaVazia = document.getElementById('previa-vazia');
+
+  var GRUPO_PRODUTO = ['n15', 'n16'];
+
+  // Separa número e texto da pergunta ("4b. Contém sal?" → "4b", "Contém sal?").
+  function partes(texto) {
+    var m = texto.match(/^(\S+)\s+(.*)$/);
+    return m ? { num: m[1], resto: m[2] } : { num: '', resto: texto };
+  }
+
+  function criarPergunta(p) {
+    var fs = document.createElement('fieldset');
+    fs.className = 'pergunta';
+    fs.id = 'bloco-' + p.id;
+    var pt = partes(p.texto);
+    var legend = document.createElement('legend');
+    legend.innerHTML = '<span class="num"></span><span class="txt"></span>';
+    legend.querySelector('.num').textContent = pt.num;
+    legend.querySelector('.txt').textContent = pt.resto;
+    fs.appendChild(legend);
+
+    var sn = document.createElement('div');
+    sn.className = 'sn';
+    [['s', 'Sim', 'sim'], ['n', 'Não', 'nao']].forEach(function (op) {
+      var input = document.createElement('input');
+      input.type = 'radio';
+      input.name = p.id;
+      input.value = op[0];
+      input.id = p.id + '-' + op[0];
+      var label = document.createElement('label');
+      label.htmlFor = input.id;
+      label.className = op[2];
+      label.textContent = op[1];
+      sn.appendChild(input);
+      sn.appendChild(label);
+    });
+    fs.appendChild(sn);
+    return fs;
+  }
+
+  function criarExtra(id, rotulo, ajuda) {
+    var div = document.createElement('div');
+    div.className = 'extra';
+    div.id = 'bloco-' + id;
+    div.hidden = true;
+    var label = document.createElement('label');
+    label.htmlFor = id;
+    label.textContent = rotulo;
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.id = id;
+    input.name = id;
+    div.appendChild(label);
+    div.appendChild(input);
+    if (ajuda) {
+      var small = document.createElement('small');
+      small.textContent = ajuda;
+      div.appendChild(small);
+    }
+    return div;
+  }
+
+  var contIngredientes = document.getElementById('perguntas-ingredientes');
+  var contProduto = document.getElementById('perguntas-produto');
+  R.PERGUNTAS.forEach(function (p) {
+    var fs = criarPergunta(p);
+    if (p.id === 'n14') {
+      fs.appendChild(criarExtra('ionoforo', R.TEXTO_IONOFORO));
+    }
+    if (p.id === 'n16') {
+      fs.appendChild(criarExtra('sal', R.TEXTO_SAL, 'Opcional. Ex.: 19,55'));
+    }
+    (GRUPO_PRODUTO.indexOf(p.id) >= 0 ? contProduto : contIngredientes).appendChild(fs);
+  });
+
+  function lerRespostas() {
+    var r = { nome: campoNome.value, ionoforo: '', sal: '' };
+    R.PERGUNTAS.forEach(function (p) {
+      var marcado = form.querySelector('input[name="' + p.id + '"]:checked');
+      r[p.id] = marcado ? marcado.value : '';
+    });
+    r.ionoforo = document.getElementById('ionoforo').value;
+    r.sal = document.getElementById('sal').value;
+    return r;
+  }
+
+  // Lista o que ainda falta responder, na ordem do formulário.
+  function pendencias(r) {
+    var faltam = [];
+    if (!r.nome.trim()) faltam.push({ bloco: 'bloco-nome', foco: 'nome', nome: 'nome do produto' });
+    R.PERGUNTAS.forEach(function (p) {
+      if (!r[p.id]) faltam.push({ bloco: 'bloco-' + p.id, foco: p.id + '-s', nome: partes(p.texto).num.replace(/\.$/, '') });
+      if (p.id === 'n14' && R.perguntaIonoforo(r) && !r.ionoforo.trim()) {
+        faltam.push({ bloco: 'bloco-ionoforo', foco: 'ionoforo', nome: 'ionóforo' });
+      }
+    });
+    return faltam;
+  }
+
+  var tentouGerar = false;
+
+  function atualizar() {
+    var r = lerRespostas();
+    document.getElementById('bloco-ionoforo').hidden = !R.perguntaIonoforo(r);
+    document.getElementById('bloco-sal').hidden = !R.perguntaSal(r);
+
+    var faltam = pendencias(r);
+    document.querySelectorAll('.faltando').forEach(function (el) { el.classList.remove('faltando'); });
+    if (tentouGerar) {
+      faltam.forEach(function (f) { document.getElementById(f.bloco).classList.add('faltando'); });
+    }
+
+    if (faltam.length) {
+      previa.hidden = true;
+      previaVazia.hidden = false;
+      if (tentouGerar) {
+        mostrarStatus('Faltam respostas: ' + faltam.map(function (f) { return f.nome; }).join(', ') + '.', 'erro');
+      } else {
+        mostrarStatus(faltam.length === 1 ? 'Falta 1 resposta.' : 'Faltam ' + faltam.length + ' respostas.', '');
+      }
+      return null;
+    }
+    var texto = R.gerarRelatorio(r);
+    previa.textContent = texto;
+    previa.hidden = false;
+    previaVazia.hidden = true;
+    if (!statusEl.classList.contains('ok')) mostrarStatus('Todas as perguntas respondidas.', '');
+    return { texto: texto, nome: r.nome.trim() };
+  }
+
+  function mostrarStatus(msg, tipo) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (tipo ? ' ' + tipo : '');
+  }
+
+  function exigirCompleto() {
+    var res = atualizar();
+    if (res) return res;
+    tentouGerar = true;
+    atualizar();
+    var primeira = pendencias(lerRespostas())[0];
+    var alvo = document.getElementById(primeira.foco);
+    document.getElementById(primeira.bloco).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (alvo) alvo.focus({ preventScroll: true });
+    return null;
+  }
+
+  // Remove do nome do arquivo os caracteres que o Windows não aceita.
+  function nomeArquivo(nome) {
+    return nome.replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+$/, '') + '.txt';
+  }
+
+  document.getElementById('baixar').addEventListener('click', function () {
+    var res = exigirCompleto();
+    if (!res) return;
+    var blob = new Blob([res.texto], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = nomeArquivo(res.nome);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    mostrarStatus('Arquivo baixado: ' + a.download, 'ok');
+  });
+
+  document.getElementById('copiar').addEventListener('click', function () {
+    var res = exigirCompleto();
+    if (!res) return;
+    function copiado() { mostrarStatus('Texto copiado.', 'ok'); }
+    function alternativa() {
+      var t = document.createElement('textarea');
+      t.value = res.texto;
+      t.setAttribute('readonly', '');
+      t.style.position = 'fixed';
+      t.style.opacity = '0';
+      document.body.appendChild(t);
+      t.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      t.remove();
+      if (ok) copiado();
+      else mostrarStatus('Não foi possível copiar. Selecione o texto ao lado e use Ctrl+C.', 'erro');
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(res.texto).then(copiado, alternativa);
+    } else {
+      alternativa();
+    }
+  });
+
+  document.getElementById('limpar').addEventListener('click', function () {
+    if (!window.confirm('Apagar todas as respostas?')) return;
+    form.reset();
+    tentouGerar = false;
+    mostrarStatus('', '');
+    atualizar();
+    campoNome.focus();
+  });
+
+  form.addEventListener('input', function () {
+    if (statusEl.classList.contains('ok')) mostrarStatus('', '');
+    atualizar();
+  });
+  form.addEventListener('change', atualizar);
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
+
+  atualizar();
+})();
+</script>
+</body>
+</html>
