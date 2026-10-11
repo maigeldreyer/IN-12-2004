@@ -56,6 +56,11 @@
     margin: 0 auto;
     padding: 28px 24px 22px;
   }
+  .navegacao { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: -14px 0 14px; font-size: 0.92rem; }
+  .navegacao a { color: var(--apagado); text-decoration: none; padding: 2px 0; border-bottom: 2px solid transparent; }
+  .navegacao a:hover { color: var(--tinta); }
+  .navegacao a[aria-current="page"] { color: var(--pasto); font-weight: 600; border-bottom-color: var(--milho); }
+  .navegacao a:focus-visible { outline: 3px solid var(--milho); outline-offset: 2px; }
   .topo h1 {
     margin: 0;
     font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.3rem);
@@ -260,6 +265,10 @@
 <body>
 <header class="topo">
   <div class="topo-interno">
+    <nav class="navegacao" aria-label="Ferramentas">
+      <a href="./" aria-current="page">Composição e substitutivos</a>
+      <a href="tabela-vr/">Tabela VR: bovinos de corte</a>
+    </nav>
     <h1>Composição e substitutivos de suplementos</h1>
     <p>Responda às perguntas para gerar o texto de composição básica qualitativa, eventuais substitutivos, modo de usar e restrições, com o registro das respostas no final.</p>
   </div>
