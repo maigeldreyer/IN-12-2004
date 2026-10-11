@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probióticos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232E5B39'/%3E%3Ccircle cx='11' cy='12' r='4' fill='%23D9A62E'/%3E%3Ccircle cx='21' cy='11' r='3' fill='%23fff'/%3E%3Ccircle cx='17' cy='21' r='5' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  /* Sem fontes ou bibliotecas externas: funciona mesmo em redes que bloqueiam o Google. */
+  :root {
+    --papel: #F2F4EF;
+    --cartao: #FFFFFF;
+    --tinta: #1D2A21;
+    --apagado: #5A685E;
+    --linha: #C9D1C6;
+    --linha-suave: #E2E7E0;
+    --pasto: #2E5B39;
+    --pasto-claro: #E3ECE1;
+    --milho: #D9A62E;
+    --milho-claro: #FBF0D2;
+    --vermelho: #B42318;
+    --sans: "Segoe UI", "Helvetica Neue", Arial, system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --papel: #141A16;
+      --cartao: #1C241E;
+      --tinta: #E4EAE3;
+      --apagado: #9AA89D;
+      --linha: #34423A;
+      --linha-suave: #29342D;
+      --pasto: #7DB98A;
+      --pasto-claro: #233327;
+      --milho: #E3B748;
+      --milho-claro: #3A3218;
+      --vermelho: #FF8A7A;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--papel); color: var(--tinta); font: 16px/1.5 var(--sans); }
+
+  .topo { border-bottom: 6px solid var(--pasto); background: var(--cartao); }
+  .topo-interno { max-width: 1180px; margin: 0 auto; padding: 14px 24px 22px; }
+  .navegacao { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-bottom: 14px; font-size: 0.92rem; }
+  .navegacao a { color: var(--apagado); text-decoration: none; padding: 2px 0; border-bottom: 2px solid transparent; }
+  .navegacao a:hover { color: var(--tinta); }
+  .navegacao a[aria-current="page"] { color: var(--pasto); font-weight: 600; border-bottom-color: var(--milho); }
+  .navegacao a:focus-visible { outline: 3px solid var(--milho); outline-offset: 2px; }
+  .topo h1 { margin: 0; font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.3rem); line-height: 1.15; letter-spacing: -0.01em; }
+  .topo p { margin: 8px 0 0; max-width: 66ch; color: var(--apagado); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 24px 24px 64px; }
+
+  h2 { font-size: 1.1rem; margin: 0 0 10px; }
+  .secao { margin-bottom: 30px; }
+
+  /* Escolha do probiótico */
+  .produtos { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; }
+  .produtos legend { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; padding: 0; }
+  .produtos input { position: absolute; opacity: 0; pointer-events: none; }
+  .produtos label {
+    display: inline-block; padding: 8px 14px; border: 1.5px solid var(--linha); border-radius: 999px;
+    background: var(--cartao); cursor: pointer; font-weight: 600; color: var(--apagado);
+  }
+  .produtos label:hover { border-color: var(--pasto); color: var(--tinta); }
+  .produtos input:checked + label { background: var(--pasto); border-color: var(--pasto); color: #fff; }
+  .produtos input:focus-visible + label { outline: 3px solid var(--milho); outline-offset: 2px; }
+  @media (prefers-color-scheme: dark) { .produtos input:checked + label { color: #10170F; } }
+
+  .inclusao {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 18px;
+    background: var(--cartao); border: 1.5px solid var(--linha); border-radius: 8px; padding: 14px 16px;
+  }
+  .inclusao label { font-weight: 700; }
+  .com-sufixo { display: inline-flex; align-items: center; gap: 6px; }
+  .inclusao input { width: 8rem; font-size: 1.15rem; font-weight: 700; }
+  .inclusao .ajuda { color: var(--apagado); font-size: 0.9rem; flex-basis: 100%; margin: 0; }
+
+  input[type="text"] {
+    font: inherit; color: var(--tinta); background: var(--cartao);
+    border: 1.5px solid var(--linha); border-radius: 6px; padding: 7px 9px; width: 100%;
+  }
+  input[type="text"]:focus-visible { outline: 3px solid var(--milho); outline-offset: 1px; border-color: var(--tinta); }
+  input.num { text-align: right; font-variant-numeric: tabular-nums; }
+  input[aria-invalid="true"] { border-color: var(--vermelho); }
+
+  /* Tabela */
+  .tabela-caixa { background: var(--cartao); border: 1.5px solid var(--linha); border-radius: 8px; overflow: hidden; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+  th, td { padding: 7px 10px; border-bottom: 1px solid var(--linha-suave); text-align: left; vertical-align: middle; }
+  thead th { font-size: 0.84rem; font-weight: 700; color: var(--apagado); border-bottom: 1.5px solid var(--linha); vertical-align: bottom; }
+  thead tr.grupos th { border-bottom: 0; padding-bottom: 0; color: var(--tinta); font-size: 0.86rem; }
+  thead tr.grupos th.g-inclusao { box-shadow: inset 0 -3px 0 var(--pasto); }
+  thead tr.grupos th.g-desejada { box-shadow: inset 0 -3px 0 var(--milho); }
+  .num { text-align: right; white-space: nowrap; }
+  td.calc { font-weight: 600; }
+  td.calc.vazio { color: var(--apagado); font-weight: 400; }
+  td.maior { background: var(--milho-claro); }
+  td.maior strong { color: var(--tinta); }
+  col.c-nome { width: 30%; }
+  col.c-entrada { width: 17%; }
+  col.c-calc { width: 15%; }
+  col.c-acao { width: 3.2rem; }
+  .remover {
+    font: inherit; font-size: 1.2rem; line-height: 1; width: 2rem; height: 2rem; border-radius: 6px;
+    border: 1.5px solid transparent; background: transparent; color: var(--apagado); cursor: pointer;
+  }
+  .remover:hover { border-color: var(--linha); color: var(--vermelho); }
+  .remover:focus-visible { outline: 3px solid var(--milho); outline-offset: 1px; }
+  .erro-campo { display: block; color: var(--vermelho); font-size: 0.8rem; margin-top: 2px; }
+
+  .tabela-acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+  button.acao {
+    font: inherit; font-weight: 600; border-radius: 6px; padding: 8px 14px; cursor: pointer;
+    border: 1.5px solid var(--pasto); background: var(--cartao); color: var(--pasto);
+  }
+  button.acao.principal { background: var(--pasto); color: #fff; }
+  @media (prefers-color-scheme: dark) { button.acao.principal { color: #10170F; } }
+  button.acao.discreto { border-color: transparent; background: transparent; color: var(--apagado); text-decoration: underline; }
+  button.acao:focus-visible { outline: 3px solid var(--milho); outline-offset: 2px; }
+
+  /* Resultados */
+  .resultados { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .cartao { background: var(--cartao); border: 1.5px solid var(--linha); border-radius: 8px; padding: 16px 18px; }
+  .cartao.garantia { border-top: 5px solid var(--pasto); }
+  .cartao.maxima { border-top: 5px solid var(--milho); }
+  .cabeca { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px 14px; margin-bottom: 8px; }
+  .cabeca h2 { margin: 0; }
+  .texto { margin: 0; }
+  .valor-grande { font-size: 2rem; font-weight: 700; line-height: 1.1; margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+  .detalhe { color: var(--apagado); margin: 0 0 12px; }
+  .feito { color: var(--pasto); font-weight: 600; font-size: 0.9rem; }
+  .aviso-campos { color: var(--vermelho); font-weight: 600; margin: 10px 0 0; }
+
+  [hidden] { display: none !important; }
+
+  @media (max-width: 900px) {
+    .resultados { grid-template-columns: minmax(0, 1fr); }
+  }
+  /* Celular: cada microrganismo vira um cartão */
+  @media (max-width: 720px) {
+    main { padding: 16px 16px 48px; }
+    .topo-interno { padding: 12px 16px 18px; }
+    .tabela-caixa { background: transparent; border: 0; overflow: visible; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    thead, colgroup { display: none; }
+    tbody tr { background: var(--cartao); border: 1.5px solid var(--linha); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; position: relative; }
+    td { border: 0; padding: 4px 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 8px; align-items: center; }
+    td::before { content: attr(data-rotulo); color: var(--apagado); font-size: 0.86rem; font-weight: 400; text-align: left; white-space: normal; }
+    td.c-nome-td { display: block; padding-right: 40px; }
+    td.c-nome-td::before { content: none; }
+    td.c-nome-td input { font-weight: 700; }
+    td.c-acao-td { position: absolute; top: 10px; right: 8px; width: auto; padding: 0; display: block; }
+    td.c-acao-td::before { content: none; }
+    td.maior { border-radius: 6px; padding-left: 6px; padding-right: 6px; }
+    .num { text-align: right; }
+  }
+</style>
+</head>
+<body>
+<header class="topo">
+  <div class="topo-interno">
+    <nav class="navegacao" aria-label="Ferramentas">
+      <a href="../">Composição e substitutivos</a>
+      <a href="../tabela-vr/">Tabela VR: bovinos de corte</a>
+      <a href="./" aria-current="page">Probióticos</a>
+    </nav>
+    <h1>Cálculo de probióticos</h1>
+    <p>Escolha o probiótico e informe a inclusão para obter a concentração de cada microrganismo no produto final e o texto de garantia. Informe as concentrações desejadas para saber a inclusão necessária.</p>
+  </div>
+</header>
+
+<main>
+  <section class="secao">
+    <fieldset class="produtos" id="produtos">
+      <legend>Probiótico</legend>
+    </fieldset>
+    <div class="inclusao">
+      <label for="inclusao">Inclusão no produto final</label>
+      <span class="com-sufixo"><input type="text" class="num" id="inclusao" inputmode="decimal" autocomplete="off"> %</span>
+      <p class="ajuda">Use vírgula para decimais: 0,2 significa 0,20%.</p>
+    </div>
+  </section>
+
+  <section class="secao" aria-labelledby="t-micro">
+    <h2 id="t-micro">Microrganismos</h2>
+    <div class="tabela-caixa">
+      <table>
+        <colgroup><col class="c-nome"><col class="c-entrada"><col class="c-calc"><col class="c-entrada"><col class="c-calc"><col class="c-acao"></colgroup>
+        <thead>
+          <tr class="grupos">
+            <th colspan="2" scope="colgroup"></th>
+            <th scope="col" class="num g-inclusao">Pela inclusão</th>
+            <th colspan="2" scope="colgroup" class="num g-desejada">Pela concentração desejada</th>
+            <th></th>
+          </tr>
+          <tr>
+            <th scope="col">Microrganismo</th>
+            <th scope="col" class="num">No probiótico (UFC/kg)</th>
+            <th scope="col" class="num">No produto final (UFC/kg)</th>
+            <th scope="col" class="num">Desejada no produto final (UFC/kg)</th>
+            <th scope="col" class="num">Inclusão necessária</th>
+            <th scope="col"><span class="sr" style="position:absolute;left:-9999px">Remover</span></th>
+          </tr>
+        </thead>
+        <tbody id="linhas"></tbody>
+      </table>
+    </div>
+    <div class="tabela-acoes">
+      <button type="button" class="acao" id="adicionar">Adicionar microrganismo</button>
+      <button type="button" class="acao discreto" id="restaurar">Restaurar valores da planilha</button>
+    </div>
+    <p class="aviso-campos" id="aviso-campos" role="status" aria-live="polite" hidden></p>
+  </section>
+
+  <section class="resultados">
+    <div class="cartao garantia">
+      <div class="cabeca">
+        <h2>Níveis de garantia</h2>
+        <span><button type="button" class="acao" id="copiar">Copiar texto</button> <span class="feito" id="copiado" role="status" aria-live="polite"></span></span>
+      </div>
+      <p class="texto" id="texto-garantia"></p>
+    </div>
+    <div class="cartao maxima" id="cartao-maxima">
+      <h2>Inclusão que atende a todas as concentrações desejadas</h2>
+      <div id="maxima-conteudo"></div>
+    </div>
+  </section>
+</main>
+
+<script src="probiotico.js"></script>
+<script>
+(function () {
+  'use strict';
+  var P = window.Probiotico;
+  var estados = P.PRODUTOS.map(function (_, i) { return null; });
+  var atual = 0;
+  var corpo = document.getElementById('linhas');
+  var campoInclusao = document.getElementById('inclusao');
+
+  // Estado de edição de cada probiótico (os textos digitados ficam guardados ao trocar de probiótico).
+  function estadoInicial(i) {
+    var p = P.produtoInicial(i);
+    return {
+      inclusao: P.percentualEntrada(p.inclusao),
+      itens: p.itens.map(function (it) {
+        return { nome: it.nome, concentracao: P.cientificoEntrada(it.concentracao), desejada: P.cientificoEntrada(it.desejada) };
+      })
+    };
+  }
+  function estado() { if (!estados[atual]) estados[atual] = estadoInicial(atual); return estados[atual]; }
+
+  // ---- Escolha do probiótico ----
+  var grupo = document.getElementById('produtos');
+  P.PRODUTOS.forEach(function (p, i) {
+    var input = document.createElement('input');
+    input.type = 'radio'; input.name = 'produto'; input.id = 'produto-' + i; input.value = i;
+    if (i === 0) input.checked = true;
+    var label = document.createElement('label');
+    label.htmlFor = input.id; label.textContent = p.nome;
+    grupo.appendChild(input); grupo.appendChild(label);
+    input.addEventListener('change', function () { atual = i; montar(); });
+  });
+
+  // ---- Tabela ----
+  function criarInput(valor, classe, rotulo, campo, indice) {
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.value = valor;
+    if (classe) input.className = classe;
+    input.setAttribute('aria-label', rotulo);
+    input.autocomplete = 'off';
+    input.spellcheck = false;
+    input.dataset.campo = campo;
+    input.dataset.indice = indice;
+    if (classe === 'num') input.placeholder = 'ex.: 3,00E+11';
+    return input;
+  }
+  function td(rotulo, classe) {
+    var c = document.createElement('td');
+    if (rotulo) c.dataset.rotulo = rotulo;
+    if (classe) c.className = classe;
+    return c;
+  }
+
+  function montar() {
+    var e = estado();
+    campoInclusao.value = e.inclusao;
+    corpo.innerHTML = '';
+    e.itens.forEach(function (it, i) {
+      var tr = document.createElement('tr');
+      var nomeTexto = it.nome || 'microrganismo ' + (i + 1);
+      var c1 = td('Microrganismo', 'c-nome-td');
+      c1.appendChild(criarInput(it.nome, '', 'Nome do microrganismo ' + (i + 1), 'nome', i));
+      var c2 = td('No probiótico (UFC/kg)', 'num');
+      c2.appendChild(criarInput(it.concentracao, 'num', 'Concentração no probiótico, ' + nomeTexto, 'concentracao', i));
+      var c3 = td('No produto final (UFC/kg)', 'num calc');
+      c3.id = 'final-' + i;
+      var c4 = td('Desejada no produto final (UFC/kg)', 'num');
+      c4.appendChild(criarInput(it.desejada, 'num', 'Concentração desejada no produto final, ' + nomeTexto, 'desejada', i));
+      var c5 = td('Inclusão necessária', 'num calc');
+      c5.id = 'necessaria-' + i;
+      var c6 = td('', 'c-acao-td');
+      var rem = document.createElement('button');
+      rem.type = 'button'; rem.className = 'remover'; rem.textContent = '×';
+      rem.setAttribute('aria-label', 'Remover ' + nomeTexto);
+      rem.addEventListener('click', function () {
+        e.itens.splice(i, 1);
+        montar();
+        var botoes = corpo.querySelectorAll('.remover');
+        (botoes[Math.min(i, botoes.length - 1)] || document.getElementById('adicionar')).focus();
+      });
+      c6.appendChild(rem);
+      [c1, c2, c3, c4, c5, c6].forEach(function (c) { tr.appendChild(c); });
+      corpo.appendChild(tr);
+    });
+    calcular();
+  }
+
+  // ---- Cálculo ----
+  function ler(texto, input) {
+    var v = P.lerNumero(texto);
+    var invalido = typeof v === 'number' && isNaN(v);
+    if (input) input.setAttribute('aria-invalid', invalido ? 'true' : 'false');
+    return { valor: invalido ? null : v, invalido: invalido };
+  }
+
+  function formatarMaxima(fracao) {
+    var v = Number((fracao * 100).toPrecision(12));
+    var com2 = Math.round(v * 100) / 100;
+    if (Math.abs(com2 - v) < 1e-9) return { texto: com2.toFixed(2).replace('.', ','), arredondada: false };
+    var acima = Math.ceil(Number((v * 10000).toPrecision(12))) / 10000;
+    return { texto: acima.toFixed(4).replace('.', ','), arredondada: true };
+  }
+
+  function calcular() {
+    var e = estado();
+    var invalidos = [];
+    var inc = ler(campoInclusao.value, campoInclusao);
+    if (inc.invalido) invalidos.push('inclusão');
+    var itens = e.itens.map(function (it, i) {
+      var linha = corpo.children[i];
+      var inputs = linha ? linha.querySelectorAll('input') : [];
+      var b = ler(it.concentracao, inputs[1]);
+      var d = ler(it.desejada, inputs[2]);
+      if (b.invalido) invalidos.push((it.nome || 'microrganismo ' + (i + 1)) + ' (no probiótico)');
+      if (d.invalido) invalidos.push((it.nome || 'microrganismo ' + (i + 1)) + ' (desejada)');
+      return { nome: it.nome, concentracao: b.valor, desejada: d.valor };
+    });
+    var r = P.calcular({ inclusao: inc.valor === null ? null : inc.valor / 100, itens: itens });
+
+    r.linhas.forEach(function (l, i) {
+      var cFinal = document.getElementById('final-' + i);
+      var cNec = document.getElementById('necessaria-' + i);
+      if (!cFinal) return;
+      cFinal.textContent = l.textoConcentracao;
+      var semBase = P.eErro(l.inclusaoNecessaria);
+      cNec.textContent = semBase ? '—' : P.percentual(l.inclusaoNecessaria);
+      cNec.title = semBase ? 'Informe a concentração no probiótico.' : '';
+      cNec.classList.toggle('vazio', semBase);
+      cNec.classList.toggle('maior', !!l.ehMaior);
+      cNec.setAttribute('aria-description', l.ehMaior ? 'maior inclusão necessária' : '');
+    });
+
+    document.getElementById('texto-garantia').textContent = r.textoGarantia || 'Adicione ao menos um microrganismo com nome.';
+
+    var caixa = document.getElementById('maxima-conteudo');
+    caixa.innerHTML = '';
+    if (r.maiorInclusao === null) {
+      var p = document.createElement('p');
+      p.className = 'detalhe';
+      p.textContent = 'Informe as concentrações desejadas e as concentrações no probiótico para calcular.';
+      caixa.appendChild(p);
+    } else {
+      var m = formatarMaxima(r.maiorInclusao);
+      var valor = document.createElement('p');
+      valor.className = 'valor-grande';
+      valor.textContent = m.texto + '%';
+      var nomes = r.definidores.map(function (i) { return r.linhas[i].nome || 'microrganismo ' + (i + 1); });
+      var det = document.createElement('p');
+      det.className = 'detalhe';
+      det.textContent = (nomes.length === 1 ? 'Definida por ' : 'Definida por ') + juntarNomes(nomes) + '.' +
+        (m.arredondada ? ' Valor arredondado para cima.' : '');
+      var usar = document.createElement('button');
+      usar.type = 'button'; usar.className = 'acao principal'; usar.textContent = 'Usar esta inclusão';
+      usar.addEventListener('click', function () {
+        campoInclusao.value = m.texto;
+        e.inclusao = m.texto;
+        calcular();
+        campoInclusao.focus();
+      });
+      caixa.appendChild(valor); caixa.appendChild(det); caixa.appendChild(usar);
+    }
+
+    var aviso = document.getElementById('aviso-campos');
+    if (invalidos.length) {
+      aviso.textContent = 'Corrija os valores destacados (' + invalidos.join(', ') + '). Use números como 3,00E+11 ou 300000000000. Enquanto isso, eles contam como vazios.';
+      aviso.hidden = false;
+    } else {
+      aviso.hidden = true;
+    }
+  }
+
+  function juntarNomes(nomes) {
+    if (nomes.length <= 1) return nomes.join('');
+    return nomes.slice(0, -1).join(', ') + ' e ' + nomes[nomes.length - 1];
+  }
+
+  // ---- Eventos ----
+  corpo.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (!t.dataset || t.dataset.campo === undefined) return;
+    var e = estado();
+    e.itens[Number(t.dataset.indice)][t.dataset.campo] = t.value;
+    calcular();
+  });
+  campoInclusao.addEventListener('input', function () { estado().inclusao = campoInclusao.value; calcular(); });
+
+  document.getElementById('adicionar').addEventListener('click', function () {
+    estado().itens.push({ nome: '', concentracao: '', desejada: '' });
+    montar();
+    var nomes = corpo.querySelectorAll('input[data-campo="nome"]');
+    nomes[nomes.length - 1].focus();
+  });
+  document.getElementById('restaurar').addEventListener('click', function () {
+    if (!window.confirm('Voltar este probiótico aos valores da planilha? As alterações feitas nele serão perdidas.')) return;
+    estados[atual] = estadoInicial(atual);
+    montar();
+  });
+
+  document.getElementById('copiar').addEventListener('click', function () {
+    var texto = document.getElementById('texto-garantia').textContent;
+    var aviso = document.getElementById('copiado');
+    function ok() { aviso.textContent = 'Copiado.'; setTimeout(function () { aviso.textContent = ''; }, 3000); }
+    function falha() { aviso.textContent = 'Não foi possível copiar. Selecione o texto e use Ctrl+C.'; }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texto).then(ok, falha);
+    } else {
+      var t = document.createElement('textarea');
+      t.value = texto; t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select();
+      var sucesso = false;
+      try { sucesso = document.execCommand('copy'); } catch (err) {}
+      t.remove();
+      if (sucesso) ok(); else falha();
+    }
+  });
+
+  montar();
+})();
+</script>
+</body>
+</html>

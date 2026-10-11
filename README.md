@@ -8,8 +8,9 @@ https://maigeldreyer.github.io/IN-12-2004/
 
 Gera o texto de rótulo (composição básica qualitativa, eventuais substitutivos, modo de usar e restrições), com o log das respostas no final. É a versão web do notebook do Colab "Composição e Substitutivos - Suplementos - Rural (v2)", e o texto gerado é idêntico ao do notebook.
 
-- `index.html`: o formulário.
+- `index.html`: o formulário e os links dos templates.
 - `relatorio.js`: a lógica do relatório. Para mudar ingredientes, substitutivos ou recomendações, edite este arquivo. Se mudar aqui, mude também no Colab (e vice-versa).
+- `templates/`: templates de rótulo do LibreOffice (Suplemento, Ração e núcleo, Alvorada), baixados pela primeira página. Para trocar um template, substitua o arquivo mantendo o mesmo nome.
 
 ## Tabela VR: bovinos de corte
 
@@ -28,3 +29,14 @@ Arquivos:
 - `tabela-vr/tabela-vr.js`: a lógica dos cálculos, com a linha correspondente da planilha indicada nos comentários. Se mudar aqui, mude também na planilha (e vice-versa).
 - `tabela-vr/relatorio-excel.js`: o conteúdo do arquivo Excel.
 - `tabela-vr/xlsx.js`: gerador de arquivos .xlsx.
+
+## Probióticos
+
+https://maigeldreyer.github.io/IN-12-2004/probiotico/
+
+Versão web da planilha "Probiótico - Cálculo", com os seis probióticos da planilha. Pela inclusão, calcula a concentração de cada microrganismo no produto final e o texto de garantia; pela concentração desejada, calcula a inclusão necessária de cada microrganismo e destaca a maior, que atende a todos. Os valores e microrganismos podem ser ajustados na página para um cálculo avulso.
+
+Os resultados são idênticos aos da planilha, com "(mín)" acentuado no texto de garantia. Em empates exatos no terceiro algarismo (ex.: 2,115E+09), o texto arredonda para cima (2,12E+09).
+
+- `probiotico/index.html`: a página.
+- `probiotico/probiotico.js`: a lista de probióticos e a lógica dos cálculos. Para incluir ou alterar um probiótico de forma permanente, edite a lista `PRODUTOS` neste arquivo.
