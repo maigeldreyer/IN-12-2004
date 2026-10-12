@@ -40,3 +40,13 @@ Os resultados são idênticos aos da planilha, com "(mín)" acentuado no texto d
 
 - `probiotico/index.html`: a página.
 - `probiotico/probiotico.js`: a lista de probióticos e a lógica dos cálculos. Para incluir ou alterar um probiótico de forma permanente, edite a lista `PRODUTOS` neste arquivo.
+
+## Marca d'água em PDF
+
+https://maigeldreyer.github.io/IN-12-2004/marca-dagua/
+
+Insere "Elaborado e aprovado por Maigel Dreyer em dd/mm/aa às hh:mm", na cor #0000CC, em todas as páginas de um ou mais PDFs. A posição é escolhida arrastando a marca sobre a prévia da página (ou por atalhos de topo e rodapé), e vale para todas as páginas, inclusive as giradas ou de outro tamanho. Um PDF é baixado direto; vários vêm num arquivo .zip. Os arquivos são processados no navegador e não são enviados para nenhum servidor. PDFs protegidos por criptografia não podem ser alterados.
+
+- `marca-dagua/index.html`: a página.
+- `marca-dagua/marca.js`: a lógica da marca (texto, posição, rotação das páginas e ZIP).
+- `marca-dagua/vendor/`: pdf-lib 1.17.1 (MIT), que escreve a marca, e pdf.js 6.2.108 legacy (Apache 2.0), que mostra a prévia, com as respectivas licenças.
